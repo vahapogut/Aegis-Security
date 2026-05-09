@@ -1,62 +1,147 @@
 <div align="center">
-  <img src="/C:/Users/vahap/.gemini/antigravity/brain/dad3f73d-a75a-4946-9e0e-2123c5bd3b0d/aegis_logo_1778334727699.png" width="200" alt="Aegis Logo"/>
-  <h1>🛡️ Aegis</h1>
+  <img src="assets/logo.png" width="180" alt="Aegis Logo"/>
+  <h1>Aegis</h1>
   <p><strong>AI-era security scanner for LLM-generated code.</strong></p>
+  <p>Detect hallucinated vulnerabilities, auth bypasses, floating promises, and risky AI-generated patterns — before production.</p>
+
+  <br/>
+
+  <a href="#-quick-start"><img src="https://img.shields.io/badge/cargo_install-aegis-blue?style=for-the-badge&logo=rust" alt="Install"/></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green?style=for-the-badge" alt="License"/></a>
+  <a href="#-rule-showcase"><img src="https://img.shields.io/badge/rules-10-red?style=for-the-badge" alt="Rules"/></a>
+
 </div>
 
-Aegis is a deterministic, fast, and precise security scanner designed specifically to catch "AI anti-patterns" and hallucinations in modern codebases. 
+<br/>
 
-Unlike traditional SAST tools that look for generic vulnerabilities and produce noisy false positives, Aegis specifically models the **incorrect thinking patterns** of LLMs (Copilot, Cursor, DeepSeek). It doesn't just tell you there's a bug; it tells you *why* the AI made the mistake.
+> **Aegis prioritizes precision over noisy detection. We aim for zero false positives.**
+
+---
+
+## 🚀 Quick Start
 
 ```bash
-$ cargo install aegis
+cargo install aegis
+aegis audit .
+```
+
+That's it. No config needed. No cloud. No API keys. 100% local.
+
+---
+
+## 🖥️ Demo
+
+<div align="center">
+  <img src="assets/demo.png" width="700" alt="Aegis Demo"/>
+</div>
+
+```bash
 $ aegis audit .
+
+[HIGH] Possible Auth Bypass. Sensitive route lacks authorization (role) checks. in auth.ts:35
+    Explanation: AI often implements JWT verification but forgets to check
+    if the user actually has the privileges to access the route.
+
+[HIGH] Floating promise detected. AI often forgets to await async functions. in db.ts:12
+    Explanation: Unawaited database calls may continue executing after
+    the request lifecycle ends, causing race conditions.
+
+[HIGH] Hardcoded secret detected. in config.ts:3
+    Explanation: AI coding assistants frequently insert mock API keys
+    which developers forget to move into environment variables.
+
+[MEDIUM] Fake validation detected. in users.ts:7
+    Explanation: AI generates if-checks that log errors but never return,
+    allowing execution to continue past failed validation.
+
+Scan Summary
+────────────
+HIGH:   8
+MEDIUM: 1
+LOW:    0
+
+AI Risk Score: 82/100
+
+[!] Found 9 violations
 ```
 
 ---
 
 ## 💡 Why Aegis Exists
 
-The rise of AI coding assistants has drastically increased development speed, but it has introduced a new class of bugs:
-* **Hallucinated validations** that look correct but do nothing.
-* **Floating promises** because the AI forgot to add `await` during refactoring.
-* **Silent failures** where errors are caught and swallowed with a simple `console.log`.
-* **Missing authorization** where JWTs are checked but user roles are ignored.
+AI coding assistants (Copilot, Cursor, Claude, DeepSeek) have drastically increased development speed. But they introduced a **new class of bugs** that traditional linters completely miss — because the syntax is perfectly valid. The **logic** is what's broken.
 
-Traditional linters miss these because the syntax is perfectly valid. Aegis uses **Tree-sitter** and a custom YAML rule engine to catch these behavioral security flaws with surgical precision.
+Aegis doesn't ask *"is this code vulnerable?"*
+Aegis asks **"did an AI write this, and did it cut corners?"**
 
-## 🚀 Demo
-
-```bash
-$ aegis audit .
-
-[HIGH] Possible Auth Bypass. Sensitive route lacks authorization (role) checks. in auth.ts:35
-    Explanation: AI often implements JWT verification but forgets to check if the user actually has the privileges to access the route. If this is an admin or destructive route, ensure you verify req.user.role or req.user.permissions.
-
-Scan Summary
-────────────
-HIGH:   1
-MEDIUM: 0
-LOW:    0
-
-AI Risk Score: 10/100
-```
-
-*Note: Aegis prioritizes precision over noisy detection. We aim for 0% false positives.*
+We use **Tree-sitter** for AST parsing and a custom **YAML rule engine** to catch these behavioral security flaws with surgical precision.
 
 ---
 
-## 🎯 Rule Showcase (TypeScript MVP)
+## 🔥 Real AI-Generated Security Failures
 
-Aegis ships with an ultra-high-quality rule set focusing on genuine AI pitfalls.
+These are actual patterns that LLMs produce daily. Aegis catches all of them.
 
-| Rule ID | Problem Detected | Why it happens |
-|---------|------------------|----------------|
-| `ai-auth-bypass` | JWT validated, but no Role/Permission check | AI writes the middleware but forgets the business logic. |
-| `ai-floating-promise` | Unawaited async DB/Network calls | Very common during AI refactoring. Causes race conditions. |
-| `ai-silent-fail` | `catch(e) { console.log(e) }` | AI is lazy with error handling. Swallows critical production crashes. |
-| `ai-regex-injection` | `new RegExp(req.query.q)` | AI directly passes user input to RegExp, causing ReDoS attacks. |
-| `ai-fake-validation` | `if (!user) { console.log("err") }` | AI forgets the `return` statement, allowing auth bypass. |
+### 1. Forgotten `await` (Race Condition)
+```typescript
+// AI writes this during refactoring — looks fine, silently breaks everything
+app.post('/api/users', (req, res) => {
+    db.save(req.body);  // ← No await. Data may never persist.
+    res.send("Saved");
+});
+```
+
+### 2. Fake Validation (Auth Bypass)
+```typescript
+// AI adds the check but forgets to stop execution
+if (!req.body.email) {
+    console.log("Email missing");  // ← No return. Code continues below.
+}
+createUser(req.body);  // ← Runs even without email
+```
+
+### 3. Silent Error Swallowing
+```typescript
+// AI's favorite: catch and forget
+try {
+    await chargeCustomer(order);
+} catch (e) {
+    console.log(e);  // ← Payment fails silently. Customer never charged.
+}
+```
+
+### 4. Hardcoded Placeholder Secrets
+```typescript
+// AI leaves test credentials that ship to production
+const API_KEY = "sk-test-1234567890abcdef";
+```
+
+### 5. Open Redirect via User Input
+```typescript
+// AI takes the shortcut — instant phishing vulnerability
+app.get('/redirect', (req, res) => {
+    res.redirect(req.query.next);  // ← Attacker controls destination
+});
+```
+
+---
+
+## 🎯 Rule Showcase
+
+Aegis ships with **10 ultra-high-quality rules** focusing on genuine AI pitfalls.
+
+| Rule ID | Severity | Problem Detected | Why AI Does This |
+|---------|----------|------------------|------------------|
+| `ai-auth-bypass` | 🔴 HIGH | JWT validated but no role/permission check | AI writes middleware but forgets business logic |
+| `ai-floating-promise` | 🔴 HIGH | Unawaited async DB/Network calls | Very common during AI refactoring |
+| `ai-silent-fail` | 🔴 HIGH | `catch(e) { console.log(e) }` | AI is lazy with error handling |
+| `ai-hardcoded-secret` | 🔴 HIGH | Placeholder API keys left in code | AI inserts `sk-test` and forgets |
+| `ai-regex-injection` | 🔴 HIGH | `new RegExp(req.query.q)` | AI passes user input directly to RegExp |
+| `ai-open-redirect` | 🔴 HIGH | `res.redirect(req.query.next)` | AI takes shortcuts with redirects |
+| `ai-insecure-fetch` | 🔴 HIGH | `rejectUnauthorized: false` | AI disables TLS to "fix" SSL errors |
+| `ai-missing-rate-limit` | 🔴 HIGH | Login/OTP route without brute-force protection | AI never adds rate limiting |
+| `ai-unsafe-innerhtml` | 🔴 HIGH | `innerHTML = userInput` without sanitization | AI skips DOMPurify |
+| `ai-fake-validation` | 🟡 MEDIUM | Validation block that never returns/throws | AI checks but doesn't enforce |
 
 ---
 
@@ -67,27 +152,28 @@ Rust and Tree-sitter make Aegis blazingly fast.
 ```text
 Scanned 12,000 LOC in 0.08s
 ```
+
 Aegis adds zero noticeable overhead to your CI/CD pipeline.
 
 ---
 
 ## 🥊 Why not Semgrep?
 
-"Isn't this just Semgrep?" No. While we share architectural inspiration (AST + YAML rules), Aegis is solving a fundamentally different problem with a different philosophy.
+"Isn't this just Semgrep?" — No. We share architectural inspiration (AST + YAML rules), but we solve a fundamentally different problem.
 
-| Feature | Semgrep | Aegis |
-|---------|---------|-------|
-| **Core Focus** | Generic SAST | AI behavioral security |
-| **Target Audience** | Security Engineers | Developers using AI Assistants |
-| **Vulnerability Type** | General vulnerabilities (SQLi, XSS) | LLM-specific failure patterns (Hallucinations, Lazy logic) |
-| **Detection Strategy** | Broad detection | Precision-first AI-risk detection (Zero false-positive goal) |
-| **Output Context** | Standard linting warnings | Explanation Engine (Why the AI made this mistake) |
+| | Semgrep | Aegis |
+|---|---------|-------|
+| **Focus** | Generic SAST | AI behavioral security |
+| **Audience** | Security Engineers | Developers using AI Assistants |
+| **Detects** | General vulnerabilities (SQLi, XSS) | LLM-specific failure patterns |
+| **Strategy** | Broad detection | Precision-first (Zero false-positive goal) |
+| **Output** | Standard warnings | Explanation Engine (*Why* the AI made this mistake) |
 
 ---
 
 ## ⚙️ GitHub Action
 
-Developers don't want to install CLI tools. Just drop Aegis into your CI/CD pipeline and it will automatically audit AI-generated code in every Pull Request.
+Drop Aegis into your CI/CD pipeline. It will automatically audit every Pull Request.
 
 ```yaml
 name: Aegis Security Audit
@@ -100,16 +186,42 @@ jobs:
       - uses: actions/checkout@v3
       - uses: vahapogut/aegis-action@v1
         with:
-          format: 'sarif' # or json/text
+          format: 'sarif'
 ```
 
-## 🔌 Enterprise Integration
+---
 
-Aegis supports JSON and SARIF output formats for easy integration into GitHub Security tab, Datadog, or custom dashboards.
+## 🔌 Output Formats
+
+Aegis supports JSON and SARIF output for easy integration with GitHub Security tab, Datadog, or custom dashboards.
 
 ```bash
 aegis audit . --format json
+aegis audit . --format text   # default, colored terminal output
 ```
 
+---
+
+## 📖 Writing Custom Rules
+
+Aegis rules are YAML files with Tree-sitter queries. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+
+```yaml
+rule:
+  id: "ai-your-pattern"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Short description of the bug."
+  explanation: "Why the AI does this and how to fix it."
+  query: >
+    (catch_clause
+      body: (statement_block) @block
+      (#not-match? @block "throw|return")
+    )
+```
+
+---
+
 ## 📜 License
-MIT License. Built for the community by IPEC Labs.
+
+Apache-2.0. Built for the community by [IPEC Labs](mailto:info@ipeclabs.com).
