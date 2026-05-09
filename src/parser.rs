@@ -1,5 +1,5 @@
 use tree_sitter::{Language, Parser, Tree};
-use anyhow::{Result, Context};
+use anyhow::Result;
 
 pub struct TsParser {
     ts_parser: Parser,
@@ -9,12 +9,14 @@ pub struct TsParser {
 impl TsParser {
     pub fn new() -> Result<Self> {
         let mut ts_parser = Parser::new();
-        ts_parser.set_language(&tree_sitter_typescript::LANGUAGE_TYPESCRIPT.into())
-            .context("Failed to set Tree-sitter language to TypeScript")?;
+        let ts_lang: Language = tree_sitter_typescript::language_typescript();
+        ts_parser.set_language(&ts_lang)
+            .map_err(|e| anyhow::anyhow!("Failed to set TypeScript language: {:?}", e))?;
 
         let mut py_parser = Parser::new();
-        py_parser.set_language(&tree_sitter_python::LANGUAGE.into())
-            .context("Failed to set Tree-sitter language to Python")?;
+        let py_lang: Language = tree_sitter_python::language();
+        py_parser.set_language(&py_lang)
+            .map_err(|e| anyhow::anyhow!("Failed to set Python language: {:?}", e))?;
         
         Ok(Self { ts_parser, py_parser })
     }
@@ -28,8 +30,8 @@ impl TsParser {
 
     pub fn get_language(&self, lang: &str) -> Language {
         match lang {
-            "python" => tree_sitter_python::LANGUAGE.into(),
-            _ => tree_sitter_typescript::LANGUAGE_TYPESCRIPT.into(),
+            "python" => tree_sitter_python::language(),
+            _ => tree_sitter_typescript::language_typescript(),
         }
     }
 }

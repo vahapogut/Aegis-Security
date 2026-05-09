@@ -1,6 +1,6 @@
 use crate::rule::Rule;
 use crate::parser::TsParser;
-use tree_sitter::{Query, QueryCursor, StreamingIterator};
+use tree_sitter::{Query, QueryCursor};
 use anyhow::{Result, anyhow};
 use colored::*;
 
