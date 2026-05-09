@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/logo.png" width="180" alt="Aegis Logo"/>
+  <img src="ipeclabs-logo-light.svg" width="180" alt="Aegis by IPEC Labs"/>
   <h1>Aegis</h1>
   <p><strong>AI-era security scanner for LLM-generated code.</strong></p>
   <p>Detect hallucinated vulnerabilities, auth bypasses, floating promises, and risky AI-generated patterns — before production.</p>
