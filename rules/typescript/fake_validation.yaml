@@ -1,0 +1,12 @@
+rule:
+  id: "ai-fake-validation"
+  language: "typescript"
+  confidence: "MEDIUM"
+  message: "Fake validation detected. AI generated validation block lacks 'return' or 'throw'."
+  explanation: "AI often generates if-checks that merely log an error but fail to halt the execution of the function. This can lead to severe authentication bypasses or crashes down the line."
+  query: >
+    (if_statement
+      condition: (parenthesized_expression (unary_expression operator: "!"))
+      consequence: (statement_block) @block
+      (#not-match? @block "return|throw|break")
+    )

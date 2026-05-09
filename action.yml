@@ -1,0 +1,28 @@
+name: 'Aegis Audit'
+description: 'AI-era secure coding infrastructure. Detects AI-generated vulnerabilities and anti-patterns.'
+branding:
+  icon: 'shield'
+  color: 'black'
+inputs:
+  path:
+    description: 'Directory to scan'
+    required: false
+    default: '.'
+  format:
+    description: 'Output format (text, json, sarif)'
+    required: false
+    default: 'text'
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Aegis
+      shell: bash
+      run: |
+        # Download the latest binary (placeholder)
+        echo "Installing Aegis..."
+        # curl -sSL https://github.com/vahapogut/aegis/releases/latest/download/aegis-linux-amd64 -o /usr/local/bin/aegis
+        # chmod +x /usr/local/bin/aegis
+        
+    - name: Run Aegis Audit
+      shell: bash
+      run: aegis audit ${{ inputs.path }} --format ${{ inputs.format }}

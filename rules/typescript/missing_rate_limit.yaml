@@ -1,0 +1,13 @@
+rule:
+  id: "ai-missing-rate-limit"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Missing rate limiter on sensitive route."
+  explanation: "AI often generates authentication routes (login, OTP, reset-password) without brute-force protection. Ensure you add a rate limiting middleware (like express-rate-limit) to this endpoint."
+  query: >
+    (call_expression
+      arguments: (arguments
+        (string) @route (#match? @route "(?i)(login|otp|reset|forgot|verify)")
+      ) @args
+      (#not-match? @args "(?i)(limit|throttle|brute)")
+    )

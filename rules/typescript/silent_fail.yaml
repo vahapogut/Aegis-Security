@@ -1,0 +1,11 @@
+rule:
+  id: "ai-silent-fail"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Silent failure detected. AI generated catch blocks often swallow errors without throwing."
+  explanation: "Catching an error and only using console.log() hides critical failures in production. AI is notorious for generating these silent fail blocks. To fix this, either re-throw the error, return an HTTP error response, or use a proper logger like Sentry.captureException."
+  query: >
+    (catch_clause
+      body: (statement_block) @block
+      (#not-match? @block "throw|return|next|captureException|\\.error")
+    )

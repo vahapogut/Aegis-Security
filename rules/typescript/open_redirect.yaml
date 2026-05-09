@@ -1,0 +1,17 @@
+rule:
+  id: "ai-open-redirect"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Open redirect vulnerability. AI passed user input directly to a redirect."
+  explanation: "Using req.query or req.body to control the destination of a redirect allows attackers to launch phishing campaigns by crafting legitimate-looking URLs that redirect to malicious sites."
+  query: >
+    (call_expression
+      function: (member_expression property: (property_identifier) @redirect (#eq? @redirect "redirect"))
+      arguments: (arguments 
+        [
+          (member_expression object: (identifier) @obj)
+          (member_expression object: (member_expression object: (identifier) @obj))
+        ]
+      )
+      (#match? @obj "^(req|request|query|body|params)$")
+    )

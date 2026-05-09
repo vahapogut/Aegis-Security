@@ -1,0 +1,18 @@
+rule:
+  id: "ai-regex-injection"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Regex injection risk. AI often passes user input directly into 'new RegExp()', which can cause ReDoS attacks."
+  explanation: "When AI implements search features, it frequently passes req.query or req.body directly into the RegExp constructor. Malicious users can exploit this to cause a Regular Expression Denial of Service (ReDoS) and crash your server."
+  query: >
+    (new_expression
+      constructor: (identifier) @regex
+      arguments: (arguments 
+        [
+          (member_expression object: (identifier) @obj)
+          (member_expression object: (member_expression object: (identifier) @obj))
+        ]
+      )
+      (#eq? @regex "RegExp")
+      (#match? @obj "^(req|request|query|body|params)$")
+    )

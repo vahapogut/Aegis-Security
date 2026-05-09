@@ -1,0 +1,16 @@
+rule:
+  id: "ai-auth-bypass"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Possible Auth Bypass. Sensitive route lacks authorization (role) checks."
+  explanation: "AI often implements JWT verification but forgets to check if the user actually has the privileges to access the route. If this is an admin or destructive route, ensure you verify req.user.role or req.user.permissions."
+  query: >
+    (call_expression
+      arguments: (arguments
+        (string) @route (#match? @route "(?i)(admin|delete|update|secret)")
+        (identifier) @middleware
+        (arrow_function body: (statement_block) @handler)
+      )
+      (#match? @middleware "(?i)(auth|verify|jwt|protect)")
+      (#not-match? @handler "(?i)(role|permission|admin|owner|scope)")
+    )

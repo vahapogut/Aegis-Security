@@ -1,0 +1,16 @@
+rule:
+  id: "ai-insecure-fetch"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Insecure TLS configuration detected."
+  explanation: "AI sometimes bypasses SSL/TLS errors by disabling certificate validation (e.g., rejectUnauthorized: false or NODE_TLS_REJECT_UNAUTHORIZED = '0'). This leaves your application vulnerable to Man-In-The-Middle (MITM) attacks."
+  query: >
+    [
+      (assignment_expression
+        left: (member_expression property: (property_identifier) @prop (#eq? @prop "NODE_TLS_REJECT_UNAUTHORIZED"))
+      )
+      (pair
+        key: (property_identifier) @key (#eq? @key "rejectUnauthorized")
+        value: [(false) (number) @num (#eq? @num "0") (string) @str (#eq? @str "\"0\"")]
+      )
+    ]

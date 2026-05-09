@@ -1,0 +1,11 @@
+rule:
+  id: "ai-unsafe-innerhtml"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "XSS Risk: Unsafe HTML injection."
+  explanation: "AI often generates dangerouslySetInnerHTML or innerHTML assignments without sanitizing the input. This exposes your application to Cross-Site Scripting (XSS). Always use DOMPurify or similar sanitizers."
+  query: >
+    (assignment_expression
+      left: (member_expression property: (property_identifier) @prop (#eq? @prop "innerHTML"))
+      right: [(identifier) (member_expression)]
+    )

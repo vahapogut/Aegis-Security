@@ -1,0 +1,16 @@
+rule:
+  id: "ai-floating-promise"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Floating promise detected. AI often forgets to await async functions."
+  explanation: "Unawaited database or network calls may continue executing after the request lifecycle ends, causing race conditions or inconsistent states. This is a very common hallucination during AI refactoring."
+  query: >
+    (expression_statement
+      (call_expression
+        function: [
+          (identifier) @func
+          (member_expression property: (property_identifier) @func)
+        ]
+      ) @call
+      (#match? @func "^(fetch|save|update|insert|delete|send|query|execute)$")
+    )
