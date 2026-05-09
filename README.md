@@ -2,13 +2,13 @@
   <img src="ipeclabs-logo-light.svg" width="180" alt="Aegis by IPEC Labs"/>
   <h1>Aegis</h1>
   <p><strong>AI-era security scanner for LLM-generated code.</strong></p>
-  <p>Detect hallucinated vulnerabilities, auth bypasses, floating promises, and risky AI-generated patterns — before production.</p>
+  <p>Detect hallucinated vulnerabilities, auth bypasses, floating promises, and risky AI-generated patterns in <b>TypeScript</b> and <b>Python</b> — before production.</p>
 
   <br/>
 
   <a href="#quick-start"><img src="https://img.shields.io/badge/cargo_install-aegis-blue?style=for-the-badge&logo=rust" alt="Install"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green?style=for-the-badge" alt="License"/></a>
-  <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-10-red?style=for-the-badge" alt="Rules"/></a>
+  <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-15-red?style=for-the-badge" alt="Rules"/></a>
 
 </div>
 
@@ -82,66 +82,84 @@ We use **Tree-sitter** for AST parsing and a custom **YAML rule engine** to catc
 
 These are actual patterns that LLMs produce daily. Aegis catches all of them.
 
-### 1. Forgotten `await` (Race Condition)
+### TypeScript
+
+**Forgotten `await` (Race Condition)**
 ```typescript
-// AI writes this during refactoring — looks fine, silently breaks everything
 app.post('/api/users', (req, res) => {
     db.save(req.body);  // ← No await. Data may never persist.
     res.send("Saved");
 });
 ```
 
-### 2. Fake Validation (Auth Bypass)
+**Fake Validation (Auth Bypass)**
 ```typescript
-// AI adds the check but forgets to stop execution
 if (!req.body.email) {
     console.log("Email missing");  // ← No return. Code continues below.
 }
 createUser(req.body);  // ← Runs even without email
 ```
 
-### 3. Silent Error Swallowing
+**Silent Error Swallowing**
 ```typescript
-// AI's favorite: catch and forget
 try {
     await chargeCustomer(order);
 } catch (e) {
-    console.log(e);  // ← Payment fails silently. Customer never charged.
+    console.log(e);  // ← Payment fails silently.
 }
 ```
 
-### 4. Hardcoded Placeholder Secrets
-```typescript
-// AI leaves test credentials that ship to production
-const API_KEY = "sk-test-1234567890abcdef";
+### Python
+
+**SQL Injection via f-string**
+```python
+# AI's #1 Python mistake — f-strings in SQL
+cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")
 ```
 
-### 5. Open Redirect via User Input
-```typescript
-// AI takes the shortcut — instant phishing vulnerability
-app.get('/redirect', (req, res) => {
-    res.redirect(req.query.next);  // ← Attacker controls destination
-});
+**Unsafe Pickle Deserialization (RCE)**
+```python
+# AI suggests pickle for everything — allows remote code execution
+model = pickle.load(open("model.pkl", "rb"))
+```
+
+**DEBUG=True Left in Production**
+```python
+# AI generates Django/Flask boilerplate and never flips this
+DEBUG = True
+SECRET_KEY = "super-secret-key-12345"
 ```
 
 ---
 
 ## Rule Showcase
 
-Aegis ships with **10 ultra-high-quality rules** focusing on genuine AI pitfalls.
+Aegis ships with **15 precision-first rules** across TypeScript and Python.
 
-| Rule ID | Severity | Problem Detected | Why AI Does This |
-|---------|----------|------------------|------------------|
-| `ai-auth-bypass` | HIGH | JWT validated but no role/permission check | AI writes middleware but forgets business logic |
-| `ai-floating-promise` | HIGH | Unawaited async DB/Network calls | Very common during AI refactoring |
-| `ai-silent-fail` | HIGH | `catch(e) { console.log(e) }` | AI is lazy with error handling |
-| `ai-hardcoded-secret` | HIGH | Placeholder API keys left in code | AI inserts `sk-test` and forgets |
-| `ai-regex-injection` | HIGH | `new RegExp(req.query.q)` | AI passes user input directly to RegExp |
-| `ai-open-redirect` | HIGH | `res.redirect(req.query.next)` | AI takes shortcuts with redirects |
-| `ai-insecure-fetch` | HIGH | `rejectUnauthorized: false` | AI disables TLS to "fix" SSL errors |
-| `ai-missing-rate-limit` | HIGH | Login/OTP route without brute-force protection | AI never adds rate limiting |
-| `ai-unsafe-innerhtml` | HIGH | `innerHTML = userInput` without sanitization | AI skips DOMPurify |
-| `ai-fake-validation` | MEDIUM | Validation block that never returns/throws | AI checks but doesn't enforce |
+### TypeScript Rules (10)
+
+| Rule ID | Severity | Problem Detected |
+|---------|----------|------------------|
+| `ai-auth-bypass` | HIGH | JWT validated but no role/permission check |
+| `ai-floating-promise` | HIGH | Unawaited async DB/Network calls |
+| `ai-silent-fail` | HIGH | `catch(e) { console.log(e) }` |
+| `ai-hardcoded-secret` | HIGH | Placeholder API keys left in code |
+| `ai-regex-injection` | HIGH | `new RegExp(req.query.q)` |
+| `ai-open-redirect` | HIGH | `res.redirect(req.query.next)` |
+| `ai-insecure-fetch` | HIGH | `rejectUnauthorized: false` |
+| `ai-missing-rate-limit` | HIGH | Login/OTP route without brute-force protection |
+| `ai-unsafe-innerhtml` | HIGH | `innerHTML = userInput` without sanitization |
+| `ai-fake-validation` | MEDIUM | Validation block that never returns/throws |
+
+### Python Rules (5)
+
+| Rule ID | Severity | Problem Detected |
+|---------|----------|------------------|
+| `ai-bare-except` | HIGH | `except:` that swallows all errors silently |
+| `ai-hardcoded-secret-py` | HIGH | Credentials hardcoded in source files |
+| `ai-sql-format-string` | HIGH | SQL injection via f-strings or `.format()` |
+| `ai-debug-true` | HIGH | `DEBUG = True` left in Django/Flask settings |
+| `ai-pickle-load` | HIGH | `pickle.load()` allows Remote Code Execution |
 
 ---
 
