@@ -1,0 +1,11 @@
+rule:
+  id: "ai-bare-except"
+  language: "python"
+  confidence: "HIGH"
+  message: "Bare except clause detected. AI often writes 'except:' or 'except Exception:' that swallows all errors silently."
+  explanation: "AI generates broad exception handlers that catch everything including KeyboardInterrupt and SystemExit. This hides critical bugs in production. Use specific exception types and always log or re-raise."
+  query: >
+    (except_clause
+      (block) @body
+      (#not-match? @body "raise|sys\\.exit|logging|logger")
+    )

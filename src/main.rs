@@ -67,11 +67,14 @@ fn main() -> anyhow::Result<()> {
             }
 
             // Collect files
+            let supported_extensions = ["ts", "tsx", "py"];
             let mut files_to_scan = Vec::new();
             let target_path = Path::new(path);
             if target_path.is_file() {
-                if target_path.extension().and_then(|s| s.to_str()) == Some("ts") {
-                    files_to_scan.push(target_path.to_path_buf());
+                if let Some(ext) = target_path.extension().and_then(|s| s.to_str()) {
+                    if supported_extensions.contains(&ext) {
+                        files_to_scan.push(target_path.to_path_buf());
+                    }
                 }
             } else if target_path.is_dir() {
                 let walker = walkdir::WalkDir::new(target_path).into_iter();
@@ -81,8 +84,12 @@ fn main() -> anyhow::Result<()> {
                 }) {
                     let entry = entry.unwrap();
                     let p = entry.path();
-                    if p.is_file() && p.extension().and_then(|s| s.to_str()) == Some("ts") {
-                        files_to_scan.push(p.to_path_buf());
+                    if p.is_file() {
+                        if let Some(ext) = p.extension().and_then(|s| s.to_str()) {
+                            if supported_extensions.contains(&ext) {
+                                files_to_scan.push(p.to_path_buf());
+                            }
+                        }
                     }
                 }
             }

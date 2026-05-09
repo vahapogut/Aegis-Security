@@ -1,0 +1,13 @@
+rule:
+  id: "ai-pickle-load"
+  language: "python"
+  confidence: "HIGH"
+  message: "Unsafe deserialization via pickle.load(). AI uses pickle for data loading without considering code execution risks."
+  explanation: "AI frequently suggests pickle.load() for loading data from files or network sources. Pickle can execute arbitrary Python code during deserialization, allowing Remote Code Execution (RCE). Use json.load() or a safe alternative."
+  query: >
+    (call
+      function: (attribute
+        object: (identifier) @mod (#eq? @mod "pickle")
+        attribute: (identifier) @method (#match? @method "^(load|loads)$")
+      )
+    )

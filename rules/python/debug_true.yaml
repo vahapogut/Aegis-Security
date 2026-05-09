@@ -1,0 +1,11 @@
+rule:
+  id: "ai-debug-true"
+  language: "python"
+  confidence: "HIGH"
+  message: "Debug mode enabled in production. AI often leaves DEBUG=True in Django/Flask settings."
+  explanation: "AI generates Django or Flask boilerplate with DEBUG=True and forgets to set it to False before deployment. This exposes stack traces, internal paths, and sensitive configuration to attackers."
+  query: >
+    (assignment
+      left: (identifier) @name (#eq? @name "DEBUG")
+      right: (true) @val
+    )

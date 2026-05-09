@@ -1,7 +1,7 @@
 use crate::rule::Rule;
 use crate::parser::TsParser;
 use tree_sitter::{Query, QueryCursor, StreamingIterator};
-use anyhow::{Result, Context, anyhow};
+use anyhow::{Result, anyhow};
 use colored::*;
 
 #[derive(Debug)]
@@ -23,21 +23,34 @@ impl Engine {
         })
     }
 
+    pub fn detect_language(file_path: &str) -> Option<&str> {
+        match file_path.rsplit('.').next() {
+            Some("ts") | Some("tsx") => Some("typescript"),
+            Some("py") => Some("python"),
+            _ => None,
+        }
+    }
+
     pub fn scan_file(&mut self, file_path: &str, rules: &[Rule]) -> Result<Vec<Violation>> {
+        let lang = match Self::detect_language(file_path) {
+            Some(l) => l,
+            None => return Ok(vec![]),
+        };
+
         let source_code = std::fs::read_to_string(file_path)?;
-        let tree = self.parser.parse(&source_code).ok_or_else(|| anyhow!("Failed to parse file: {}", file_path))?;
+        let tree = self.parser.parse(&source_code, lang)
+            .ok_or_else(|| anyhow!("Failed to parse file: {}", file_path))?;
         let root_node = tree.root_node();
-        let language = self.parser.get_language();
+        let language = self.parser.get_language(lang);
 
         let mut violations = Vec::new();
         let mut cursor = QueryCursor::new();
 
         for rule in rules {
-            if rule.language != "typescript" {
+            if rule.language != lang {
                 continue;
             }
 
-            // Create query
             let query = match Query::new(&language, &rule.query) {
                 Ok(q) => q,
                 Err(e) => {

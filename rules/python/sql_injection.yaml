@@ -1,0 +1,20 @@
+rule:
+  id: "ai-sql-format-string"
+  language: "python"
+  confidence: "HIGH"
+  message: "SQL injection via string formatting. AI often uses f-strings or .format() in SQL queries instead of parameterized queries."
+  explanation: "AI frequently generates SQL queries using f-strings or .format() with user input, creating direct SQL injection vulnerabilities. Always use parameterized queries (cursor.execute('SELECT * FROM users WHERE id = %s', (user_id,)))."
+  query: >
+    (call
+      function: (attribute
+        attribute: (identifier) @method (#eq? @method "execute")
+      )
+      arguments: (argument_list
+        [
+          (string (interpolation)) @sql
+          (call
+            function: (attribute attribute: (identifier) @fmt (#eq? @fmt "format"))
+          ) @sql
+        ]
+      )
+    )
