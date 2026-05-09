@@ -8,9 +8,8 @@ rule:
     (expression_statement
       (call_expression
         function: [
-          (identifier) @func
           (member_expression property: (property_identifier) @func)
         ]
       ) @call
-      (#match? @func "^(fetch|save|update|insert|delete|send|query|execute)$")
+      (#match? @func "^(fetch|save|update|insert|delete|query|execute)$")
     )
