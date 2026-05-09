@@ -6,9 +6,9 @@
 
   <br/>
 
-  <a href="#-quick-start"><img src="https://img.shields.io/badge/cargo_install-aegis-blue?style=for-the-badge&logo=rust" alt="Install"/></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/cargo_install-aegis-blue?style=for-the-badge&logo=rust" alt="Install"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green?style=for-the-badge" alt="License"/></a>
-  <a href="#-rule-showcase"><img src="https://img.shields.io/badge/rules-10-red?style=for-the-badge" alt="Rules"/></a>
+  <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-10-red?style=for-the-badge" alt="Rules"/></a>
 
 </div>
 
@@ -18,7 +18,7 @@
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 cargo install aegis
@@ -29,7 +29,7 @@ That's it. No config needed. No cloud. No API keys. 100% local.
 
 ---
 
-## 🖥️ Demo
+## Demo
 
 <div align="center">
   <img src="assets/demo.png" width="700" alt="Aegis Demo"/>
@@ -67,7 +67,7 @@ AI Risk Score: 82/100
 
 ---
 
-## 💡 Why Aegis Exists
+## Why Aegis Exists
 
 AI coding assistants (Copilot, Cursor, Claude, DeepSeek) have drastically increased development speed. But they introduced a **new class of bugs** that traditional linters completely miss — because the syntax is perfectly valid. The **logic** is what's broken.
 
@@ -78,7 +78,7 @@ We use **Tree-sitter** for AST parsing and a custom **YAML rule engine** to catc
 
 ---
 
-## 🔥 Real AI-Generated Security Failures
+## Real AI-Generated Security Failures
 
 These are actual patterns that LLMs produce daily. Aegis catches all of them.
 
@@ -126,26 +126,26 @@ app.get('/redirect', (req, res) => {
 
 ---
 
-## 🎯 Rule Showcase
+## Rule Showcase
 
 Aegis ships with **10 ultra-high-quality rules** focusing on genuine AI pitfalls.
 
 | Rule ID | Severity | Problem Detected | Why AI Does This |
 |---------|----------|------------------|------------------|
-| `ai-auth-bypass` | 🔴 HIGH | JWT validated but no role/permission check | AI writes middleware but forgets business logic |
-| `ai-floating-promise` | 🔴 HIGH | Unawaited async DB/Network calls | Very common during AI refactoring |
-| `ai-silent-fail` | 🔴 HIGH | `catch(e) { console.log(e) }` | AI is lazy with error handling |
-| `ai-hardcoded-secret` | 🔴 HIGH | Placeholder API keys left in code | AI inserts `sk-test` and forgets |
-| `ai-regex-injection` | 🔴 HIGH | `new RegExp(req.query.q)` | AI passes user input directly to RegExp |
-| `ai-open-redirect` | 🔴 HIGH | `res.redirect(req.query.next)` | AI takes shortcuts with redirects |
-| `ai-insecure-fetch` | 🔴 HIGH | `rejectUnauthorized: false` | AI disables TLS to "fix" SSL errors |
-| `ai-missing-rate-limit` | 🔴 HIGH | Login/OTP route without brute-force protection | AI never adds rate limiting |
-| `ai-unsafe-innerhtml` | 🔴 HIGH | `innerHTML = userInput` without sanitization | AI skips DOMPurify |
-| `ai-fake-validation` | 🟡 MEDIUM | Validation block that never returns/throws | AI checks but doesn't enforce |
+| `ai-auth-bypass` | HIGH | JWT validated but no role/permission check | AI writes middleware but forgets business logic |
+| `ai-floating-promise` | HIGH | Unawaited async DB/Network calls | Very common during AI refactoring |
+| `ai-silent-fail` | HIGH | `catch(e) { console.log(e) }` | AI is lazy with error handling |
+| `ai-hardcoded-secret` | HIGH | Placeholder API keys left in code | AI inserts `sk-test` and forgets |
+| `ai-regex-injection` | HIGH | `new RegExp(req.query.q)` | AI passes user input directly to RegExp |
+| `ai-open-redirect` | HIGH | `res.redirect(req.query.next)` | AI takes shortcuts with redirects |
+| `ai-insecure-fetch` | HIGH | `rejectUnauthorized: false` | AI disables TLS to "fix" SSL errors |
+| `ai-missing-rate-limit` | HIGH | Login/OTP route without brute-force protection | AI never adds rate limiting |
+| `ai-unsafe-innerhtml` | HIGH | `innerHTML = userInput` without sanitization | AI skips DOMPurify |
+| `ai-fake-validation` | MEDIUM | Validation block that never returns/throws | AI checks but doesn't enforce |
 
 ---
 
-## ⚡ Performance
+## Performance
 
 Rust and Tree-sitter make Aegis blazingly fast.
 
@@ -157,7 +157,7 @@ Aegis adds zero noticeable overhead to your CI/CD pipeline.
 
 ---
 
-## 🥊 Why not Semgrep?
+## Why not Semgrep?
 
 "Isn't this just Semgrep?" — No. We share architectural inspiration (AST + YAML rules), but we solve a fundamentally different problem.
 
@@ -171,7 +171,7 @@ Aegis adds zero noticeable overhead to your CI/CD pipeline.
 
 ---
 
-## ⚙️ GitHub Action
+## GitHub Action
 
 Drop Aegis into your CI/CD pipeline. It will automatically audit every Pull Request.
 
@@ -191,7 +191,7 @@ jobs:
 
 ---
 
-## 🔌 Output Formats
+## Output Formats
 
 Aegis supports JSON and SARIF output for easy integration with GitHub Security tab, Datadog, or custom dashboards.
 
@@ -202,7 +202,7 @@ aegis audit . --format text   # default, colored terminal output
 
 ---
 
-## 📖 Writing Custom Rules
+## Writing Custom Rules
 
 Aegis rules are YAML files with Tree-sitter queries. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 
@@ -222,6 +222,6 @@ rule:
 
 ---
 
-## 📜 License
+## License
 
 Apache-2.0. Built for the community by [IPEC Labs](mailto:info@ipeclabs.com).
