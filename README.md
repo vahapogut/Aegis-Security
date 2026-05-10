@@ -1,6 +1,6 @@
 <div align="center">
   <img src="ipeclabs-logo-light.svg" width="180" alt="Aegis by IPEC Labs"/>
-  <h1>Aegis</h1>
+  <h1>Aegis Security</h1>
   <p><strong>AI-era security scanner for LLM-generated code.</strong></p>
   <p>Detect hallucinated vulnerabilities, auth bypasses, floating promises, and risky AI-generated patterns in <b>TypeScript</b> and <b>Python</b> — before production.</p>
 
@@ -26,6 +26,20 @@ aegis audit .
 ```
 
 That's it. No config needed. No cloud. No API keys. 100% local.
+
+---
+
+## Supported Languages
+
+| Language | Rules | Status |
+|----------|-------|--------|
+| TypeScript / TSX | 10 | Stable |
+| Python | 5 | Stable |
+| JavaScript | — | Planned |
+| Go | — | Planned |
+| Rust | — | Planned |
+
+More languages coming soon. Aegis uses Tree-sitter, which supports 40+ languages — the engine is ready, we just need community-driven rules.
 
 ---
 
