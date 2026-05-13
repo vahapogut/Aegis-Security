@@ -1,0 +1,18 @@
+rule:
+  id: "ai-no-timeout"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "HTTP fetch/axios request without timeout configured."
+  explanation: "AI-generated HTTP requests often lack timeout configuration. Without timeouts, a hanging upstream service can exhaust connection pools, cause cascading failures, and lead to denial of service. Always set a reasonable timeout."
+  query: >
+    (call_expression
+      function: (identifier) @fn
+      (#match? @fn "^(fetch|axios)$")
+    )
+
+    (call_expression
+      function: (member_expression
+        property: (property_identifier) @method
+        (#match? @method "^(get|post|put|delete|patch|request)$")
+      )
+    )

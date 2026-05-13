@@ -1,0 +1,14 @@
+rule:
+  id: "ai-assert-security"
+  language: "python"
+  confidence: "HIGH"
+  message: "assert used for security/auth check — assertions are stripped with python -O."
+  explanation: "AI-generated code frequently uses assert statements for authorization checks (assert user.is_admin). Python's -O (optimize) flag removes all assert statements, creating a silent authorization bypass. Use explicit if/raise instead."
+  query: >
+    (assert_statement
+      (attribute
+        object: (identifier) @obj
+        attribute: (identifier) @attr
+        (#match? @attr "(?i)(admin|auth|role|permission|is_|has_)")
+      )
+    )

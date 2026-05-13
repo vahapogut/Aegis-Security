@@ -1,0 +1,22 @@
+rule:
+  id: "ai-subprocess-shell"
+  language: "python"
+  confidence: "HIGH"
+  message: "subprocess call with shell=True detected — potential command injection."
+  explanation: "AI-generated code often uses subprocess with shell=True for convenience, which enables command injection when combined with user input. Use shell=False with argument lists, or shlex.quote() if shell is absolutely necessary."
+  query: >
+    (call
+      function: (attribute
+        object: (identifier) @module
+        (#match? @module "^(subprocess|os)$")
+        attribute: (identifier) @fn
+        (#match? @fn "^(call|run|Popen|check_output|system|popen)$")
+      )
+      arguments: (argument_list
+        (keyword_argument
+          name: (identifier) @kw
+          (#eq? @kw "shell")
+          value: (true) @val
+        )
+      )
+    )

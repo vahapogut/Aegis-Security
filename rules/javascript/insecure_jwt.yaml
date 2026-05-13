@@ -1,0 +1,23 @@
+rule:
+  id: "ai-insecure-jwt"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Insecure JWT configuration detected — verify tokens have proper algorithm and audience checks."
+  explanation: "AI-generated JWT code frequently uses weak signing algorithms (none, HS256 with weak secret), omits expiration (exp), or skips audience/issuer validation. Use RS256 or ES256, set short expiration, and validate all claims."
+  query: >
+    (call_expression
+      function: (member_expression
+        property: (property_identifier) @method
+        (#match? @method "^(sign|verify|decode)$")
+      )
+      arguments: (arguments
+        (object
+          (pair
+            key: (property_identifier) @key
+            (#match? @key "(?i)(algorithm|alg)")
+            value: (string (string_fragment) @algo)
+            (#match? @algo "(?i)(none|HS256)")
+          )
+        )
+      )
+    )

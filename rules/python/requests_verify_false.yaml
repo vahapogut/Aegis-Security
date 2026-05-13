@@ -1,0 +1,22 @@
+rule:
+  id: "ai-requests-verify-false"
+  language: "python"
+  confidence: "HIGH"
+  message: "requests.get/post with verify=False disables TLS certificate validation."
+  explanation: "AI assistants commonly add verify=False to suppress SSL errors during development. In production, this disables certificate validation entirely, enabling man-in-the-middle attacks. Fix the underlying certificate issue instead of disabling verification."
+  query: >
+    (call
+      function: (attribute
+        object: (identifier) @module
+        (#eq? @module "requests")
+        attribute: (identifier) @fn
+        (#match? @fn "^(get|post|put|delete|patch|head|request)$")
+      )
+      arguments: (argument_list
+        (keyword_argument
+          name: (identifier) @kw
+          (#eq? @kw "verify")
+          value: (false) @val
+        )
+      )
+    )

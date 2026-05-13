@@ -1,0 +1,19 @@
+rule:
+  id: "ai-missing-input-validation"
+  language: "typescript"
+  confidence: "MEDIUM"
+  message: "Express route handler without request body validation."
+  explanation: "AI-generated Express/Fastify routes often process req.body directly without validating fields, types, or required parameters. This leads to type confusion, mass assignment, and malformed data entering the database. Use Zod, Joi, or express-validator on every route."
+  query: >
+    (call_expression
+      function: (member_expression
+        object: (identifier) @obj
+        (#match? @obj "^(app|router|server)$")
+        property: (property_identifier) @method
+        (#match? @method "^(post|put|patch)$")
+      )
+      arguments: (arguments
+        (string) @route
+        (#match? @route "^(/[a-z].*)$")
+      )
+    )

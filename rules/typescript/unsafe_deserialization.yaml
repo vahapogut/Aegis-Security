@@ -1,0 +1,23 @@
+rule:
+  id: "ai-unsafe-deserialization"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "JSON.parse() without error handling or schema validation."
+  explanation: "AI assistants frequently deserialize user input with JSON.parse() but skip try/catch and schema validation, leaving the app vulnerable to malformed payloads. Always wrap in try/catch and validate against a schema (Zod, Joi, or similar)."
+  query: >
+    (call_expression
+      function: (member_expression
+        object: (identifier) @obj
+        (#eq? @obj "JSON")
+        property: (property_identifier) @method
+        (#eq? @method "parse")
+      )
+      arguments: (arguments
+        (member_expression
+          object: (member_expression
+            object: (identifier) @req
+            (#match? @req "^(req|request|body|query|params)$")
+          )
+        )
+      )
+    )

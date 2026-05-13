@@ -1,0 +1,23 @@
+rule:
+  id: "ai-nosql-injection"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "MongoDB query with raw user input — potential NoSQL injection."
+  explanation: "AI assistants scaffold MongoDB queries passing request body/query directly into $where, $regex, or unrestricted find() filters. This enables NoSQL injection where attackers bypass authentication or extract all documents. Use schema validation (Mongoose, Joi, Zod) before querying."
+  query: >
+    (call_expression
+      function: (member_expression
+        property: (property_identifier) @method
+        (#match? @method "^(find|findOne|updateOne|updateMany|deleteOne|deleteMany|count|aggregate)$")
+      )
+      arguments: (arguments
+        (member_expression
+          object: (member_expression
+            object: (identifier) @src
+            (#match? @src "^(req|request)$")
+          )
+          property: (property_identifier) @prop
+          (#match? @prop "^(body|query|params)$")
+        )
+      )
+    )

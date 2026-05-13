@@ -1,0 +1,21 @@
+rule:
+  id: "ai-cors-wildcard"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "CORS configured with wildcard origin '*'. AI often hardcodes overly permissive CORS during development which survives to production."
+  explanation: "AI assistants regularly add app.use(cors()) or cors({origin: '*'}) during scaffolding and developers forget to restrict it. This allows any website to make authenticated requests to your API. Specify exact allowed origins."
+  query: >
+    (call_expression
+      function: (identifier) @fn
+      (#eq? @fn "cors")
+      arguments: (arguments
+        (object
+          (pair
+            key: (property_identifier) @key
+            (#eq? @key "origin")
+            value: (string (string_fragment) @val)
+            (#eq? @val "*")
+          )
+        )
+      )
+    )

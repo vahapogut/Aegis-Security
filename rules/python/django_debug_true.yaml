@@ -1,0 +1,12 @@
+rule:
+  id: "ai-django-debug-true"
+  language: "python"
+  confidence: "HIGH"
+  message: "Django DEBUG=True detected — AI frequently leaves debug mode on in production settings."
+  explanation: "AI generates Django boilerplate with DEBUG=True and developers often forget to change it. DEBUG mode in production exposes sensitive information (settings, environment variables, stack traces) to all users. Set DEBUG=False in production and configure proper error handling."
+  query: >
+    (assignment
+      left: (identifier) @var
+      (#eq? @var "DEBUG")
+      right: (true) @val
+    )

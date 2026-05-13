@@ -1,0 +1,21 @@
+rule:
+  id: "ai-exposed-stack-trace"
+  language: "typescript"
+  confidence: "MEDIUM"
+  message: "Error handler may expose internal details to clients in production."
+  explanation: "AI-generated Express error middleware often sends err.message and err.stack directly to clients, leaking internal paths, library versions, and database structure. In production, return generic error messages and log details server-side only."
+  query: >
+    (call_expression
+      function: (member_expression
+        property: (property_identifier) @method
+        (#match? @method "^(json|send|sendStatus)$")
+      )
+      arguments: (arguments
+        (member_expression
+          object: (identifier) @err
+          (#match? @err "^(err|error|e)$")
+          property: (property_identifier) @prop
+          (#match? @prop "^(message|stack|toString)$")
+        )
+      )
+    )

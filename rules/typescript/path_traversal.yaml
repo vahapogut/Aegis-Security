@@ -1,0 +1,24 @@
+rule:
+  id: "ai-path-traversal"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "File system operation using unsanitized user input — potential path traversal."
+  explanation: "AI-generated file handling code often concatenates user input directly into file paths without sanitization, enabling directory traversal attacks (e.g., '../../etc/passwd'). Use path.join() with path.resolve() and validate the resolved path stays within the intended directory."
+  query: >
+    (call_expression
+      function: (member_expression
+        object: (identifier) @module
+        (#match? @module "^(fs|fsPromises|fsSync)$")
+        property: (property_identifier) @method
+        (#match? @method "^(readFile|writeFile|createReadStream|createWriteStream|readFileSync|writeFileSync|unlink|rm|access)$")
+      )
+      arguments: (arguments
+        (binary_expression
+          left: (string) @base
+          right: (member_expression
+            object: (identifier) @req
+            (#match? @req "^(req|request|query|body|params)$")
+          )
+        )
+      )
+    )

@@ -1,0 +1,15 @@
+rule:
+  id: "ai-unsafe-yaml"
+  language: "python"
+  confidence: "HIGH"
+  message: "Unsafe yaml.load() detected — use yaml.safe_load() instead."
+  explanation: "AI assistants frequently generate yaml.load() which can deserialize arbitrary Python objects and execute code. This is a well-known RCE vector. Always use yaml.safe_load() for untrusted input."
+  query: >
+    (call
+      function: (attribute
+        object: (identifier) @module
+        (#eq? @module "yaml")
+        attribute: (identifier) @fn
+        (#eq? @fn "load")
+      )
+    )

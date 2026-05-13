@@ -13,7 +13,7 @@
 - AI Risk Score (0-100) for project-level risk assessment
 - `.aegisignore` support for skipping directories
 
-#### 21 Security Rules
+#### 40 Security Rules
 | # | Rule | Language | What it detects |
 |---|------|----------|-----------------|
 | 1 | `ai-auth-bypass` | TypeScript | JWT verified but no role/permission check |

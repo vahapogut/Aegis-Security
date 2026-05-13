@@ -10,7 +10,7 @@
 	  <a href="#quick-start"><img src="https://img.shields.io/badge/npm-aegis--security-red?style=for-the-badge&logo=npm" alt="npm"/></a>
 	  <a href="#tests"><img src="https://img.shields.io/badge/tests-24_passed-brightgreen?style=for-the-badge" alt="Tests"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green?style=for-the-badge" alt="License"/></a>
-  <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-21-red?style=for-the-badge" alt="Rules"/></a>
+  <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-40-red?style=for-the-badge" alt="Rules"/></a>
 
 </div>
 
@@ -40,9 +40,9 @@ No config needed. No cloud. No API keys. 100% local.
 
 | Language | Rules | Status |
 |----------|-------|--------|
-| TypeScript / TSX | 10 | Stable |
-| JavaScript / JSX | 5 | Stable |
-| Python | 6 | Stable |
+| TypeScript / TSX | 16 | Stable |
+| JavaScript / JSX | 10 | Stable |
+| Python | 14 | Stable |
 | Go | — | Planned |
 | Rust | — | Planned |
 
@@ -170,9 +170,9 @@ const STRIPE_KEY = "sk_live_1234567890";
 
 ## Rule Showcase
 
-Aegis ships with **21 precision-first rules** across TypeScript, JavaScript, and Python.
+Aegis ships with **40 precision-first rules** across TypeScript, JavaScript, and Python.
 
-### TypeScript Rules (10)
+### TypeScript Rules (16)
 
 | Rule ID | Severity | Problem Detected |
 |---------|----------|------------------|
@@ -186,8 +186,14 @@ Aegis ships with **21 precision-first rules** across TypeScript, JavaScript, and
 | `ai-missing-rate-limit` | HIGH | Login/OTP route without brute-force protection |
 | `ai-unsafe-innerhtml` | HIGH | `innerHTML = userInput` without sanitization |
 | `ai-fake-validation` | MEDIUM | Validation block that never returns/throws |
+| `ai-unsafe-deserialization` | HIGH | `JSON.parse()` without error handling |
+| `ai-cors-wildcard` | HIGH | CORS configured with wildcard `*` origin |
+| `ai-sql-injection-js` | HIGH | SQL query built via string concatenation |
+| `ai-no-timeout` | HIGH | HTTP request without timeout configured |
+| `ai-path-traversal` | HIGH | File ops with unsanitized user input |
+| `ai-unhandled-rejection` | MEDIUM | Promise chain without `.catch()` handler |
 
-### JavaScript Rules (5)
+### JavaScript Rules (10)
 
 | Rule ID | Severity | Problem Detected |
 |---------|----------|------------------|
@@ -196,8 +202,13 @@ Aegis ships with **21 precision-first rules** across TypeScript, JavaScript, and
 | `ai-no-csrf` | HIGH | POST/PUT/DELETE routes without CSRF protection |
 | `ai-weak-crypto` | HIGH | MD5, SHA1, or DES algorithms detected |
 | `ai-missing-auth-check` | HIGH | Route handler without auth middleware |
+| `ai-nosql-injection` | HIGH | MongoDB query with raw user input |
+| `ai-insecure-jwt` | HIGH | JWT with weak/none algorithm |
+| `ai-exposed-stack-trace` | MEDIUM | Error handler exposes internal details |
+| `ai-dangerously-set-html` | HIGH | React dangerouslySetInnerHTML without sanitization |
+| `ai-missing-input-validation` | MEDIUM | Express route without body validation |
 
-### Python Rules (6)
+### Python Rules (14)
 
 | Rule ID | Severity | Problem Detected |
 |---------|----------|------------------|
@@ -207,6 +218,14 @@ Aegis ships with **21 precision-first rules** across TypeScript, JavaScript, and
 | `ai-debug-true` | HIGH | `DEBUG = True` left in Django/Flask settings |
 | `ai-pickle-load` | HIGH | `pickle.load()` allows Remote Code Execution |
 | `ai-hallucinated-import` | HIGH | AI-generated imports for non-existent packages |
+| `ai-unsafe-yaml` | HIGH | `yaml.load()` instead of `yaml.safe_load()` |
+| `ai-subprocess-shell` | HIGH | `subprocess` call with `shell=True` |
+| `ai-plaintext-password` | HIGH | Password compared/stored in plaintext |
+| `ai-assert-security` | HIGH | `assert` used for auth/security checks |
+| `ai-requests-verify-false` | HIGH | TLS verification disabled in requests |
+| `ai-default-secret-key` | HIGH | Django SECRET_KEY with placeholder value |
+| `ai-broad-except` | MEDIUM | Catching `Exception` too broadly |
+| `ai-django-debug-true` | HIGH | Django `DEBUG=True` in production |
 
 ---
 

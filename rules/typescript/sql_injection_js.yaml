@@ -1,0 +1,24 @@
+rule:
+  id: "ai-sql-injection-js"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "SQL query built via string concatenation with user input."
+  explanation: "AI models frequently generate raw SQL queries with template literals or string concatenation containing user input. Use parameterized queries or an ORM with safe query building instead."
+  query: >
+    (call_expression
+      function: (member_expression
+        property: (property_identifier) @method
+        (#match? @method "^(query|execute|run)$")
+      )
+      arguments: (arguments
+        (template_string
+          (string_fragment) @frag
+          (template_substitution
+            (member_expression
+              object: (identifier) @src
+              (#match? @src "^(req|request|body|query|params|input)$")
+            )
+          )
+        )
+      )
+    )

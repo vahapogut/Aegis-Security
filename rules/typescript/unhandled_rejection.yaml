@@ -1,0 +1,21 @@
+rule:
+  id: "ai-unhandled-rejection"
+  language: "typescript"
+  confidence: "MEDIUM"
+  message: "Promise chain without .catch() or try/catch — possible unhandled rejection."
+  explanation: "AI-generated async code often chains .then() calls without a .catch() handler. Unhandled promise rejections can crash Node.js processes in future versions and leave operations in an inconsistent state. Always add error handling to promise chains."
+  query: >
+    (call_expression
+      function: (member_expression
+        object: (call_expression
+          function: (member_expression
+            object: (identifier) @obj
+            (#match? @obj "^(db|database|fetch|axios|stripe|Payment|User|Order)$")
+            property: (property_identifier) @method1
+            (#match? @method1 "^(save|create|update|delete|charge|process|send|connect|query|execute)$")
+          )
+        )
+        property: (property_identifier) @method2
+        (#eq? @method2 "then")
+      )
+    )
