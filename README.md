@@ -2,11 +2,13 @@
   <img src="ipeclabs-logo-light.svg" width="180" alt="Aegis by IPEC Labs"/>
   <h1>Aegis Security</h1>
   <p><strong>AI-era security scanner for LLM-generated code.</strong></p>
-  <p>Detect hallucinated vulnerabilities, auth bypasses, floating promises, and risky AI-generated patterns in <b>TypeScript</b> and <b>Python</b> — before production.</p>
+  <p>Detect hallucinated vulnerabilities, auth bypasses, floating promises, and risky AI-generated patterns in <b>TypeScript</b>, <b>JavaScript</b>, and <b>Python</b> — before production.</p>
 
   <br/>
 
-  <a href="#quick-start"><img src="https://img.shields.io/badge/crates.io-aegis-blue?style=for-the-badge&logo=rust" alt="Install"/></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/crates.io-aegis-blue?style=for-the-badge&logo=rust" alt="crates.io"/></a>
+	  <a href="#quick-start"><img src="https://img.shields.io/badge/npm-aegis--security-red?style=for-the-badge&logo=npm" alt="npm"/></a>
+	  <a href="#tests"><img src="https://img.shields.io/badge/tests-24_passed-brightgreen?style=for-the-badge" alt="Tests"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green?style=for-the-badge" alt="License"/></a>
   <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-21-red?style=for-the-badge" alt="Rules"/></a>
 
@@ -149,6 +151,21 @@ DEBUG = True
 SECRET_KEY = "super-secret-key-12345"
 ```
 
+### JavaScript
+
+**Unsafe eval()**
+```javascript
+// AI sometimes uses eval for dynamic execution
+const userInput = req.body.code;
+eval(userInput);  // ← Remote code execution risk
+```
+
+**Hardcoded Secret**
+```javascript
+// AI inserts placeholder credentials that make it to production
+const STRIPE_KEY = "sk_live_1234567890";
+```
+
 ---
 
 ## Rule Showcase
@@ -203,6 +220,30 @@ Scanned 12,000 LOC in 0.08s
 
 Aegis adds zero noticeable overhead to your CI/CD pipeline.
 
+Run the benchmark suite:
+
+```bash
+cargo bench
+```
+
+---
+
+## Testing
+
+Aegis includes a comprehensive test suite covering the engine, parser, and rule modules.
+
+```bash
+cargo test
+```
+
+Test coverage includes:
+- Language detection (TypeScript, JavaScript, Python, unknown)
+- AST parsing (valid and invalid syntax)
+- Rule loading (YAML files, directory traversal, error handling)
+- SARIF output generation
+- Confidence level serialization
+- File scanning with real tree-sitter queries
+
 ---
 
 ## Why not Semgrep?
@@ -221,7 +262,7 @@ Aegis adds zero noticeable overhead to your CI/CD pipeline.
 
 ## GitHub Action
 
-Drop Aegis into your CI/CD pipeline. It will automatically audit every Pull Request.
+Drop Aegis into your CI/CD pipeline. It automatically audits every Pull Request and uploads SARIF results to GitHub's Security tab.
 
 ```yaml
 name: Aegis Security Audit
@@ -231,10 +272,17 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: vahapogut/aegis-action@v1
         with:
-          format: 'sarif'
+          format: 'sarif'   # Results appear in Security → Code Scanning
+```
+
+Or use it directly in any CI:
+
+```bash
+# Exit code 1 if HIGH violations found = blocks merge
+aegis audit . --format sarif > aegis-results.sarif
 ```
 
 ---
