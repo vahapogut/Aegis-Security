@@ -1,12 +1,8 @@
-mod rule;
-mod parser;
-mod engine;
-
 use clap::{Parser, Subcommand};
 use std::path::Path;
 use colored::*;
-use crate::engine::Engine;
-use crate::rule::RuleConfig;
+use aegis::engine::{Engine, generate_sarif};
+use aegis::rule::{self, RuleConfig};
 
 #[derive(Parser)]
 #[command(name = "aegis")]
@@ -25,7 +21,7 @@ enum Commands {
         /// Path to the rules directory
         #[arg(short, long, default_value = "./rules")]
         rules: String,
-        /// Output format (text, json)
+        /// Output format (text, json, sarif)
         #[arg(short, long, default_value = "text")]
         format: String,
     },
@@ -67,7 +63,7 @@ fn main() -> anyhow::Result<()> {
             }
 
             // Collect files
-            let supported_extensions = ["ts", "tsx", "py"];
+            let supported_extensions = ["ts", "tsx", "js", "jsx", "py"];
             let mut files_to_scan = Vec::new();
             let target_path = Path::new(path);
             if target_path.is_file() {
@@ -115,8 +111,6 @@ fn main() -> anyhow::Result<()> {
             }
 
             if format.to_lowercase() == "json" {
-                // Implement basic JSON output
-                // In a real app we'd Serialize the Violations directly, but we'll manually construct for now to avoid #[derive(Serialize)] on everything if not added
                 let json_output = serde_json::json!({
                     "summary": {
                         "total": total_violations,
@@ -137,6 +131,15 @@ fn main() -> anyhow::Result<()> {
                     }).collect::<Vec<_>>()
                 });
                 println!("{}", serde_json::to_string_pretty(&json_output)?);
+                return Ok(());
+            }
+
+            if format.to_lowercase() == "sarif" {
+                let sarif = generate_sarif(&all_violations, "aegis");
+                println!("{}", serde_json::to_string_pretty(&sarif)?);
+                if high_count > 0 {
+                    std::process::exit(1);
+                }
                 return Ok(());
             }
 

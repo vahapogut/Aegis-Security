@@ -2,6 +2,15 @@
 name = "aegis"
 version = "0.1.0"
 edition = "2021"
+description = "AI-era security scanner that detects hallucinated vulnerabilities, auth bypasses, and AI-generated security anti-patterns before production"
+license = "Apache-2.0"
+repository = "https://github.com/vahapogut/Aegis-Security"
+homepage = "https://github.com/vahapogut/Aegis-Security"
+documentation = "https://github.com/vahapogut/Aegis-Security"
+readme = "README.md"
+keywords = ["security", "ai", "linter", "static-analysis", "tree-sitter", "sast", "code-review", "llm", "cli"]
+categories = ["command-line-utilities", "development-tools"]
+authors = ["Abdulvahap OGUT <info@ipeclabs.com>"]
 
 [dependencies]
 anyhow        = "=1.0.86"
@@ -15,3 +24,16 @@ tree-sitter-python     = "=0.21.0"
 tree-sitter-typescript = "=0.21.2"
 walkdir       = "=2.4.0"
 indexmap       = "=2.2.6"
+uuid          = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+criterion = "0.5"
+tempfile = "3"
+
+[lib]
+name = "aegis"
+path = "src/lib.rs"
+
+[[bench]]
+name = "scan_benchmark"
+harness = false

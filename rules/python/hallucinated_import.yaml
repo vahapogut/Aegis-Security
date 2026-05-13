@@ -1,0 +1,14 @@
+rule:
+  id: "ai-hallucinated-import"
+  language: "python"
+  confidence: "HIGH"
+  message: "Potentially hallucinated Python import detected."
+  explanation: "AI models frequently generate imports for non-existent packages or modules that don't exist in the standard library or installed packages. This commonly happens with hallucinated library names. Verify the imported module actually exists in your project or requirements.txt."
+  query: >
+    (import_statement
+      name: (dotted_name) @import_name
+    )
+
+    (import_from_statement
+      module_name: (dotted_name) @import_name
+    )

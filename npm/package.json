@@ -1,0 +1,41 @@
+{
+  "name": "aegis-security",
+  "version": "0.1.0",
+  "description": "AI-era security scanner — detects hallucinated vulnerabilities, auth bypasses, and AI-generated anti-patterns in TypeScript, JavaScript, and Python",
+  "main": "install.js",
+  "bin": {
+    "aegis": "./run.js"
+  },
+  "files": [
+    "install.js",
+    "run.js",
+    "README.md"
+  ],
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "keywords": [
+    "security",
+    "ai",
+    "linter",
+    "static-analysis",
+    "tree-sitter",
+    "sast",
+    "code-review",
+    "llm",
+    "cli",
+    "aegis",
+    "vulnerability-scanner",
+    "copilot",
+    "code-quality"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vahapogut/Aegis-Security"
+  },
+  "author": "Abdulvahap OGUT <info@ipeclabs.com>",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/vahapogut/Aegis-Security#readme",
+  "os": ["darwin", "linux", "win32"],
+  "cpu": ["x64", "arm64"]
+}

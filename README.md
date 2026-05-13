@@ -6,9 +6,9 @@
 
   <br/>
 
-  <a href="#quick-start"><img src="https://img.shields.io/badge/cargo_install-aegis-blue?style=for-the-badge&logo=rust" alt="Install"/></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/crates.io-aegis-blue?style=for-the-badge&logo=rust" alt="Install"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green?style=for-the-badge" alt="License"/></a>
-  <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-15-red?style=for-the-badge" alt="Rules"/></a>
+  <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-21-red?style=for-the-badge" alt="Rules"/></a>
 
 </div>
 
@@ -21,11 +21,16 @@
 ## Quick Start
 
 ```bash
+# Cargo (recommended)
 cargo install aegis
+
+# npm
+npm install -g aegis-security
+
 aegis audit .
 ```
 
-That's it. No config needed. No cloud. No API keys. 100% local.
+No config needed. No cloud. No API keys. 100% local.
 
 ---
 
@@ -34,8 +39,8 @@ That's it. No config needed. No cloud. No API keys. 100% local.
 | Language | Rules | Status |
 |----------|-------|--------|
 | TypeScript / TSX | 10 | Stable |
-| Python | 5 | Stable |
-| JavaScript | — | Planned |
+| JavaScript / JSX | 5 | Stable |
+| Python | 6 | Stable |
 | Go | — | Planned |
 | Rust | — | Planned |
 
@@ -148,7 +153,7 @@ SECRET_KEY = "super-secret-key-12345"
 
 ## Rule Showcase
 
-Aegis ships with **15 precision-first rules** across TypeScript and Python.
+Aegis ships with **21 precision-first rules** across TypeScript, JavaScript, and Python.
 
 ### TypeScript Rules (10)
 
@@ -165,7 +170,17 @@ Aegis ships with **15 precision-first rules** across TypeScript and Python.
 | `ai-unsafe-innerhtml` | HIGH | `innerHTML = userInput` without sanitization |
 | `ai-fake-validation` | MEDIUM | Validation block that never returns/throws |
 
-### Python Rules (5)
+### JavaScript Rules (5)
+
+| Rule ID | Severity | Problem Detected |
+|---------|----------|------------------|
+| `ai-hardcoded-secret-js` | HIGH | Credentials hardcoded in JS source |
+| `ai-unsafe-eval` | HIGH | `eval()` or `new Function()` usage |
+| `ai-no-csrf` | HIGH | POST/PUT/DELETE routes without CSRF protection |
+| `ai-weak-crypto` | HIGH | MD5, SHA1, or DES algorithms detected |
+| `ai-missing-auth-check` | HIGH | Route handler without auth middleware |
+
+### Python Rules (6)
 
 | Rule ID | Severity | Problem Detected |
 |---------|----------|------------------|
@@ -174,6 +189,7 @@ Aegis ships with **15 precision-first rules** across TypeScript and Python.
 | `ai-sql-format-string` | HIGH | SQL injection via f-strings or `.format()` |
 | `ai-debug-true` | HIGH | `DEBUG = True` left in Django/Flask settings |
 | `ai-pickle-load` | HIGH | `pickle.load()` allows Remote Code Execution |
+| `ai-hallucinated-import` | HIGH | AI-generated imports for non-existent packages |
 
 ---
 
@@ -225,11 +241,12 @@ jobs:
 
 ## Output Formats
 
-Aegis supports JSON and SARIF output for easy integration with GitHub Security tab, Datadog, or custom dashboards.
+Aegis supports JSON and SARIF v2.1.0 output for easy integration with GitHub Security tab, Datadog, or custom dashboards.
 
 ```bash
-aegis audit . --format json
 aegis audit . --format text   # default, colored terminal output
+aegis audit . --format json   # machine-readable with risk score
+aegis audit . --format sarif  # GitHub Security tab integration
 ```
 
 ---

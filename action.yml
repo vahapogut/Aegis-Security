@@ -1,28 +1,58 @@
 name: 'Aegis Audit'
-description: 'AI-era secure coding infrastructure. Detects AI-generated vulnerabilities and anti-patterns.'
+description: 'AI-era security scanner — detect hallucinated vulnerabilities and AI-generated anti-patterns in your codebase'
 branding:
   icon: 'shield'
   color: 'black'
 inputs:
   path:
-    description: 'Directory to scan'
+    description: 'Directory or file to scan'
     required: false
     default: '.'
   format:
     description: 'Output format (text, json, sarif)'
     required: false
-    default: 'text'
+    default: 'sarif'
+  version:
+    description: 'Aegis version to use (e.g. 0.1.0)'
+    required: false
+    default: 'latest'
+outputs:
+  results:
+    description: 'Path to the SARIF results file'
 runs:
   using: 'composite'
   steps:
+    - name: Cache Aegis binary
+      uses: actions/cache@v4
+      with:
+        path: /usr/local/bin/aegis
+        key: aegis-${{ inputs.version }}-${{ runner.os }}-${{ runner.arch }}
     - name: Install Aegis
       shell: bash
       run: |
-        # Download the latest binary (placeholder)
-        echo "Installing Aegis..."
-        # curl -sSL https://github.com/vahapogut/aegis/releases/latest/download/aegis-linux-amd64 -o /usr/local/bin/aegis
-        # chmod +x /usr/local/bin/aegis
-        
+        if command -v aegis &> /dev/null; then
+          echo "Aegis already installed"
+          exit 0
+        fi
+        if command -v cargo &> /dev/null; then
+          cargo install aegis
+        else
+          echo "Cargo not found. Install Rust: https://rustup.rs"
+          echo "Then run: cargo install aegis"
+          exit 1
+        fi
     - name: Run Aegis Audit
+      id: aegis
       shell: bash
-      run: aegis audit ${{ inputs.path }} --format ${{ inputs.format }}
+      run: |
+        if [ "${{ inputs.format }}" = "sarif" ]; then
+          aegis audit ${{ inputs.path }} --format sarif > aegis-results.sarif
+          echo "results=aegis-results.sarif" >> $GITHUB_OUTPUT
+        else
+          aegis audit ${{ inputs.path }} --format ${{ inputs.format }}
+        fi
+    - name: Upload SARIF Results
+      if: inputs.format == 'sarif'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: aegis-results.sarif
