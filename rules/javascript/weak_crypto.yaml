@@ -1,0 +1,17 @@
+rule:
+  id: "ai-weak-crypto"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Weak cryptographic algorithm detected (MD5, SHA1, DES)."
+  explanation: "AI models frequently generate code with outdated cryptographic algorithms like MD5 or SHA-1 for hashing and DES for encryption. Use SHA-256 or better for hashing, AES-256-GCM for encryption."
+  query: >
+    (call_expression
+      function: (member_expression
+        property: (property_identifier) @algo
+        (#match? @algo "^(createHash|createHmac)$")
+      )
+      arguments: (arguments
+        (string (string_fragment) @hash)
+        (#match? @hash "(?i)(md5|sha1|SHA1|DES|RC4)")
+      )
+    )

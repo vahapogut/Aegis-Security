@@ -2,12 +2,10 @@ rule:
   id: "ai-broad-except"
   language: "python"
   confidence: "MEDIUM"
-  message: "Try block catching Exception or BaseException — too broad, masks unexpected errors."
-  explanation: "AI models often overuse `except Exception as e:` which catches KeyboardInterrupt, SystemExit, and other signals that should propagate. Catch specific exception types (ValueError, IOError, etc.) instead. Broad excepts hide bugs and make debugging difficult."
+  message: "Broad exception catch — AI often catches Exception which masks bugs."
+  explanation: "AI models overuse `except Exception as e:` which catches too many error types and can hide real bugs. Use specific exception types (ValueError, IOError, etc.) and always log or re-raise."
   query: >
     (except_clause
-      (pattern
-        (identifier) @ex
-        (#match? @ex "^(Exception|BaseException)$")
-      )
+      (identifier) @ex
+      (#match? @ex "^(Exception|BaseException)$")
     )

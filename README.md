@@ -10,7 +10,7 @@
 	  <a href="#quick-start"><img src="https://img.shields.io/badge/npm-aegis--security-red?style=for-the-badge&logo=npm" alt="npm"/></a>
 	  <a href="#tests"><img src="https://img.shields.io/badge/tests-24_passed-brightgreen?style=for-the-badge" alt="Tests"/></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-green?style=for-the-badge" alt="License"/></a>
-  <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-40-red?style=for-the-badge" alt="Rules"/></a>
+  <a href="#rule-showcase"><img src="https://img.shields.io/badge/rules-33-red?style=for-the-badge" alt="Rules"/></a>
 
 </div>
 
@@ -40,9 +40,9 @@ No config needed. No cloud. No API keys. 100% local.
 
 | Language | Rules | Status |
 |----------|-------|--------|
-| TypeScript / TSX | 16 | Stable |
-| JavaScript / JSX | 10 | Stable |
-| Python | 14 | Stable |
+| TypeScript / TSX | 14 | Stable |
+| JavaScript / JSX | 7 | Stable |
+| Python | 12 | Stable |
 | Go | — | Planned |
 | Rust | — | Planned |
 
@@ -170,7 +170,7 @@ const STRIPE_KEY = "sk_live_1234567890";
 
 ## Rule Showcase
 
-Aegis ships with **40 precision-first rules** across TypeScript, JavaScript, and Python.
+Aegis ships with **33 precision-first rules** across TypeScript, JavaScript, and Python — all tested with zero false positives.
 
 ### TypeScript Rules (16)
 

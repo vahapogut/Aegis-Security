@@ -1,0 +1,11 @@
+rule:
+  id: "ai-unsafe-eval"
+  language: "typescript"
+  confidence: "HIGH"
+  message: "Unsafe eval() or Function() constructor detected."
+  explanation: "AI-generated code sometimes uses eval() or new Function() for dynamic execution, which enables code injection attacks. Use a sandboxed interpreter or avoid dynamic execution entirely."
+  query: >
+    (call_expression
+      function: (identifier) @fn
+      (#eq? @fn "eval")
+    )
